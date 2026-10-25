@@ -76,6 +76,52 @@ const bookSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    inquiries: [
+      {
+        buyer: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        buyerName: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        buyerEmail: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        buyerPhone: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        buyerCity: {
+          type: String,
+          default: '',
+        },
+        message: {
+          type: String,
+          default: '',
+          maxlength: [1000, 'Message cannot exceed 1000 characters'],
+        },
+        preferredMeetup: {
+          type: String,
+          default: '',
+        },
+        status: {
+          type: String,
+          enum: ['pending', 'accepted', 'completed', 'declined'],
+          default: 'pending',
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

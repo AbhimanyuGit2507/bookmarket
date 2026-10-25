@@ -17,10 +17,12 @@ import {
   HelpCircle,
   Share2,
   Check,
+  Handshake,
 } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import BookCard from '../components/BookCard';
+import BuyInquiryModal from '../components/BuyInquiryModal';
 
 const conditionStyles = {
   'Brand New': 'bg-emerald-50 text-emerald-800 border-emerald-300',
@@ -51,6 +53,7 @@ export default function BookDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [buyModalOpen, setBuyModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -357,26 +360,43 @@ export default function BookDetailsPage() {
                   to="/dashboard"
                   className="inline-block px-5 py-2.5 bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold rounded-full transition shadow-xs"
                 >
-                  Manage Status in Your Seller Dashboard
+                  Manage Status & Buyer Inquiries in Dashboard
                 </Link>
               </div>
             ) : (
-              /* Contact CTAs */
+              /* Contact & Direct Buy CTAs */
               <div className="space-y-3">
+                {/* Primary Direct Buy Button */}
+                <button
+                  onClick={() => {
+                    if (!user) {
+                      navigate(`/login?redirect=/book/${book._id}`);
+                    } else {
+                      setBuyModalOpen(true);
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full text-xs sm:text-sm font-bold bg-amber-700 hover:bg-amber-800 active:scale-98 text-white transition shadow-sm shadow-amber-900/25"
+                >
+                  <Handshake className="w-5 h-5 text-amber-200" />
+                  <span>
+                    {user ? 'I Want to Buy This (Direct Peer Connect)' : 'Sign In to Connect & Buy'}
+                  </span>
+                </button>
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full text-xs sm:text-sm font-bold bg-[#25D366] hover:bg-[#20ba59] text-white transition shadow-sm shadow-[#25D366]/30 active:scale-98"
+                    className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-bold bg-[#25D366] hover:bg-[#20ba59] text-white transition shadow-sm shadow-[#25D366]/30 active:scale-98"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    <span>Contact Seller on WhatsApp</span>
+                    <span>Quick WhatsApp</span>
                   </a>
 
                   <a
                     href={mailtoUrl}
-                    className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-full text-xs sm:text-sm font-bold bg-[#faf8f5] hover:bg-[#f3efe6] text-stone-800 border border-[#e7e2d7] transition"
+                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-bold bg-[#faf8f5] hover:bg-[#f3efe6] text-stone-800 border border-[#e7e2d7] transition"
                   >
                     <Mail className="w-4 h-4 text-stone-500" />
                     <span>Email Inquiries</span>
@@ -384,15 +404,22 @@ export default function BookDetailsPage() {
                 </div>
 
                 {/* Safety note */}
-                <p className="text-[11px] text-stone-500 text-center flex items-center justify-center gap-1">
+                <p className="text-[11px] text-stone-500 text-center flex items-center justify-center gap-1 pt-1">
                   <HelpCircle className="w-3.5 h-3.5 text-stone-400" />
-                  <span>Always inspect books and meet in safe, public spots like campus libraries or cafes.</span>
+                  <span>Peer-to-peer purchase: Pay directly via Cash or UPI upon book handover.</span>
                 </p>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Buy Inquiry Modal */}
+      <BuyInquiryModal
+        isOpen={buyModalOpen}
+        onClose={() => setBuyModalOpen(false)}
+        book={book}
+      />
 
       {/* Related Books in Same Category */}
       {relatedBooks.length > 0 && (

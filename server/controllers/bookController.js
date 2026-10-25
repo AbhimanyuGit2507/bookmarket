@@ -244,6 +244,11 @@ const getMyListings = async (req, res, next) => {
       .filter((b) => b.status === 'sold')
       .reduce((sum, b) => sum + (b.price || 0), 0);
 
+    const totalInquiries = books.reduce(
+      (sum, b) => sum + (b.inquiries?.length || 0),
+      0
+    );
+
     res.status(200).json({
       success: true,
       data: books,
@@ -252,7 +257,155 @@ const getMyListings = async (req, res, next) => {
         totalActive,
         totalSold,
         estimatedRevenue,
+        totalInquiries,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createBookInquiry = async (req, res, next) => {
+  try {
+    const { message, preferredMeetup } = req.body;
+    const book = await Book.findById(req.params.id).populate(
+      'seller',
+      'name city phoneOrWhatsApp email'
+    );
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: 'Book listing not found',
+      });
+    }
+
+    if (book.seller._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: 'You cannot initiate a purchase on your own listing',
+      });
+    }
+
+    const inquiry = {
+      buyer: req.user._id,
+      buyerName: req.user.name,
+      buyerEmail: req.user.email,
+      buyerPhone: req.user.phoneOrWhatsApp,
+      buyerCity: req.user.city || '',
+      message:
+        message && message.trim() !== ''
+          ? message.trim()
+          : 'Hi! I would like to purchase your book. Can we arrange a meetup or delivery?',
+      preferredMeetup: preferredMeetup ? preferredMeetup.trim() : '',
+      status: 'pending',
+      createdAt: new Date(),
+    };
+
+    book.inquiries.unshift(inquiry);
+    await book.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Direct buy request submitted to seller',
+      inquiry,
+      seller: book.seller,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMyInquiries = async (req, res, next) => {
+  try {
+    const books = await Book.find({ 'inquiries.buyer': req.user._id })
+      .populate('seller', 'name city phoneOrWhatsApp email')
+      .sort({ updatedAt: -1 });
+
+    const inquiries = [];
+    books.forEach((book) => {
+      const userInquiries = book.inquiries.filter(
+        (inq) => inq.buyer.toString() === req.user._id.toString()
+      );
+      userInquiries.forEach((inq) => {
+        inquiries.push({
+          inquiry: inq,
+          book: {
+            _id: book._id,
+            title: book.title,
+            author: book.author,
+            genre: book.genre,
+            condition: book.condition,
+            price: book.price,
+            originalPrice: book.originalPrice,
+            coverImage: book.coverImage,
+            status: book.status,
+            city: book.city,
+            seller: book.seller,
+          },
+        });
+      });
+    });
+
+    res.status(200).json({
+      success: true,
+      data: inquiries,
+      total: inquiries.length,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateInquiryStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const { bookId, inquiryId } = req.params;
+
+    if (!['pending', 'accepted', 'completed', 'declined'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid status value',
+      });
+    }
+
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: 'Book not found',
+      });
+    }
+
+    if (book.seller.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to manage inquiries for this listing',
+      });
+    }
+
+    const inquiry = book.inquiries.id(inquiryId);
+    if (!inquiry) {
+      return res.status(404).json({
+        success: false,
+        message: 'Inquiry not found',
+      });
+    }
+
+    inquiry.status = status;
+
+    if (status === 'accepted' && book.status === 'available') {
+      book.status = 'reserved';
+    } else if (status === 'completed') {
+      book.status = 'sold';
+    }
+
+    await book.save();
+
+    res.status(200).json({
+      success: true,
+      data: inquiry,
+      bookStatus: book.status,
     });
   } catch (error) {
     next(error);
@@ -266,4 +419,8 @@ module.exports = {
   updateBookStatus,
   deleteBook,
   getMyListings,
+  createBookInquiry,
+  getMyInquiries,
+  updateInquiryStatus,
 };
+

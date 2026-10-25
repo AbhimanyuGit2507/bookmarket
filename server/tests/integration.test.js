@@ -347,6 +347,108 @@ async function runAllTests() {
     assert.strictEqual(res.status, 404);
   });
 
+  // --- DIRECT PEER BUY INQUIRIES & DUAL BUYER/SELLER ROLE ---
+  console.log(`\n${colors.bold}5. Direct Peer Buy Inquiries & Dual Buyer/Seller Roles${colors.reset}`);
+
+  // Create another listing with Jordan Lee (acting as seller)
+  const bookForInquiryRes = await request('/api/books', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${authToken}` },
+    body: {
+      title: 'Operating Systems: Three Easy Pieces',
+      author: 'Remzi H. Arpaci-Dusseau',
+      genre: 'Engineering & CS',
+      condition: 'Like New',
+      price: 20,
+      originalPrice: 40,
+      description: 'Clear textbook on virtualization, concurrency, and persistence.',
+      city: 'Portland, OR',
+    },
+  });
+  const bookForInquiryId = bookForInquiryRes.data.data._id;
+
+  // Login as Maya Lin (buyer@bookmarket.com)
+  const buyerLogin = await request('/api/auth/login', {
+    method: 'POST',
+    body: { email: 'buyer@bookmarket.com', password: 'password123' },
+  });
+  const buyerToken = buyerLogin.data.token;
+
+  await test('POST /api/books/:id/inquire allows a buyer to submit a direct purchase inquiry', async () => {
+    const res = await request(`/api/books/${bookForInquiryId}/inquire`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${buyerToken}` },
+      body: {
+        message: 'Hi Jordan, can we meet at the downtown public library tomorrow at 4 PM?',
+        preferredMeetup: 'Downtown Public Library',
+      },
+    });
+    assert.strictEqual(res.status, 201);
+    assert.strictEqual(res.data.success, true);
+    assert.ok(res.data.inquiry);
+    assert.strictEqual(res.data.inquiry.buyerName, 'Maya Lin');
+    assert.strictEqual(res.data.inquiry.buyerEmail, 'buyer@bookmarket.com');
+    assert.strictEqual(res.data.seller.name, 'Jordan Lee');
+  });
+
+  await test('POST /api/books/:id/inquire prevents a seller from inquiring on their own listing (400)', async () => {
+    const res = await request(`/api/books/${bookForInquiryId}/inquire`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${authToken}` }, // Jordan Lee attempting to buy his own book
+      body: { message: 'Attempting self-buy' },
+    });
+    assert.strictEqual(res.status, 400);
+    assert.strictEqual(res.data.success, false);
+  });
+
+  await test('GET /api/books/my/inquiries returns buyer direct purchase inquiries with seller contact', async () => {
+    const res = await request('/api/books/my/inquiries', {
+      headers: { Authorization: `Bearer ${buyerToken}` },
+    });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.success, true);
+    assert.ok(res.data.data.length >= 1);
+    const found = res.data.data.find((item) => item.book._id === bookForInquiryId);
+    assert.ok(found, 'Buyer must see their direct buy inquiry');
+    assert.strictEqual(found.book.seller.name, 'Jordan Lee');
+    assert.ok(found.book.seller.phoneOrWhatsApp);
+  });
+
+  await test('GET /api/books/my/listings returns incoming buyer inquiry on seller dashboard', async () => {
+    const res = await request('/api/books/my/listings', {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    assert.strictEqual(res.status, 200);
+    const targetBook = res.data.data.find((b) => b._id === bookForInquiryId);
+    assert.ok(targetBook);
+    assert.ok(targetBook.inquiries && targetBook.inquiries.length >= 1);
+    assert.strictEqual(targetBook.inquiries[0].buyerName, 'Maya Lin');
+    assert.strictEqual(targetBook.inquiries[0].preferredMeetup, 'Downtown Public Library');
+  });
+
+  await test('PATCH /api/books/:bookId/inquiries/:inquiryId allows seller to accept inquiry & auto-reserve book', async () => {
+    const listingsRes = await request('/api/books/my/listings', {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    const targetBook = listingsRes.data.data.find((b) => b._id === bookForInquiryId);
+    const inquiryId = targetBook.inquiries[0]._id;
+
+    const res = await request(`/api/books/${bookForInquiryId}/inquiries/${inquiryId}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${authToken}` },
+      body: { status: 'accepted' },
+    });
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.data.data.status, 'accepted');
+    assert.strictEqual(res.data.bookStatus, 'reserved');
+  });
+
+  // Cleanup test book
+  await request(`/api/books/${bookForInquiryId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+
   // --- SUMMARY REPORT ---
   console.log(`\n${colors.bold}${colors.cyan}========================================`);
   console.log(`  TEST RESULTS: ${passed} PASSED | ${failed} FAILED`);

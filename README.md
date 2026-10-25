@@ -93,9 +93,12 @@ mern-end-term/
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/books` | Public | Public catalog search. Supports `search`, `genre`, `condition`, `minPrice`, `maxPrice`, `sort`, `page`, `limit` |
 | `GET` | `/api/books/:id` | Public | Fetch book details with populated seller contact info |
-| `GET` | `/api/books/my/listings` | Protected | Fetch current seller's books and sales statistics |
+| `GET` | `/api/books/my/listings` | Protected | Fetch current seller's books, incoming buyer inquiries & sales statistics |
+| `GET` | `/api/books/my/inquiries` | Protected | Fetch current buyer's direct purchase inquiries with seller contact details |
 | `POST` | `/api/books` | Protected | Create new book listing attached to logged-in user |
+| `POST` | `/api/books/:id/inquire` | Protected | Submit direct peer purchase inquiry (shares buyer name, phone, meetup spot) |
 | `PATCH` | `/api/books/:id/status` | Protected | Update listing status (`available`, `reserved`, `sold`). Restricted to owner |
+| `PATCH` | `/api/books/:bookId/inquiries/:inquiryId` | Protected | Accept, complete, or decline incoming buyer purchase inquiry |
 | `DELETE` | `/api/books/:id` | Protected | Delete listing. Restricted to owner |
 
 ### System & Health
