@@ -1,0 +1,24 @@
+{
+  "name": "bookmarket-monorepo",
+  "version": "1.0.0",
+  "description": "The BookMarket - Peer-to-Peer Second-Hand Book Marketplace",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "seed": "npm run seed --prefix server",
+    "build:client": "npm run build --prefix client",
+    "build:server": "echo 'Server has no build step'",
+    "start": "npm start --prefix server"
+  },
+  "keywords": [
+    "mern",
+    "marketplace",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC"
+}
