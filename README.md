@@ -1,6 +1,6 @@
 # The BookMarket — Peer-to-Peer Second-Hand Book Marketplace
 
-[![Live on Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=for-the-badge&logo=vercel)](https://bookmarket-client.vercel.app)
+[![Live on Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=for-the-badge&logo=vercel)](https://the-bookmarket.vercel.app)
 [![Live on Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://the-bookmarket-api.onrender.com/health)
 [![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://cloud.mongodb.com)
 [![Tests](https://img.shields.io/badge/Tests-29%20Passing-brightgreen?style=for-the-badge&logo=node.js)](https://github.com/AbhimanyuGit2507/bookmarket)
@@ -14,7 +14,7 @@
 
 | Component | Platform | Live URL | Health Status |
 | :--- | :--- | :--- | :--- |
-| **Frontend Web App** | **Vercel** | [https://bookmarket-client.vercel.app](https://bookmarket-client.vercel.app) | 🟢 Live (HTTP 200) |
+| **Frontend Web App** | **Vercel** | [https://the-bookmarket.vercel.app](https://the-bookmarket.vercel.app) *(or [bookmarket-client.vercel.app](https://bookmarket-client.vercel.app))* | 🟢 Live (HTTP 200) |
 | **Backend REST API** | **Render** | [https://the-bookmarket-api.onrender.com](https://the-bookmarket-api.onrender.com) | 🟢 Live (Node.js/Express) |
 | **API Healthcheck** | **Render** | [https://the-bookmarket-api.onrender.com/health](https://the-bookmarket-api.onrender.com/health) | 🟢 `{"status":"ok","database":"connected"}` |
 | **Cloud Database** | **MongoDB Atlas** | `Cluster0.tqddi4l.mongodb.net` | 🟢 25 Seeded Listings across 5 Genres |
