@@ -1,4 +1,6 @@
 const assert = require('assert');
+const { spawn } = require('child_process');
+const path = require('path');
 
 const BASE_URL = process.env.TEST_API_URL || 'http://localhost:5000';
 
@@ -13,6 +15,32 @@ const colors = {
 
 let passed = 0;
 let failed = 0;
+let serverProcess = null;
+
+async function ensureServerRunning() {
+  try {
+    const res = await fetch(`${BASE_URL}/health`);
+    if (res.ok) return;
+  } catch (e) {
+    console.log(`${colors.yellow}Notice: Backend is not currently running on ${BASE_URL}. Spawning server instance for tests...${colors.reset}`);
+    serverProcess = spawn('node', [path.join(__dirname, '../index.js')], {
+      env: { ...process.env, PORT: '5000' },
+      stdio: 'pipe',
+    });
+
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 400));
+      try {
+        const res = await fetch(`${BASE_URL}/health`);
+        if (res.ok) {
+          console.log(`${colors.green}Express server is online and ready for tests.${colors.reset}\n`);
+          return;
+        }
+      } catch (err) {}
+    }
+    throw new Error('Server failed to start within 12 seconds.');
+  }
+}
 
 async function test(name, fn) {
   try {
@@ -54,6 +82,8 @@ async function request(path, options = {}) {
 }
 
 async function runAllTests() {
+  await ensureServerRunning();
+
   console.log(`\n${colors.bold}${colors.cyan}========================================`);
   console.log(`  THE BOOKMARKET: COMPREHENSIVE TEST SUITE`);
   console.log(`========================================${colors.reset}\n`);
@@ -454,12 +484,19 @@ async function runAllTests() {
   console.log(`  TEST RESULTS: ${passed} PASSED | ${failed} FAILED`);
   console.log(`========================================${colors.reset}\n`);
 
+  if (serverProcess) {
+    serverProcess.kill('SIGTERM');
+  }
+
   if (failed > 0) {
     process.exit(1);
   }
 }
 
 runAllTests().catch((err) => {
+  if (serverProcess) {
+    serverProcess.kill('SIGTERM');
+  }
   console.error('Test execution error:', err);
   process.exit(1);
 });
