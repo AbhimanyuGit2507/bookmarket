@@ -10,9 +10,19 @@ const seedData = async () => {
     await mongoose.connect(mongoUri);
     console.log(`Connected to MongoDB for seeding (${mongoUri.includes('mongodb+srv') ? 'Atlas Cloud' : 'Local'})...`);
 
-    await User.deleteMany({});
-    await Book.deleteMany({});
-    console.log('Cleared existing Users and Books.');
+    const demoEmails = [
+      'seller@bookmarket.com',
+      'buyer@bookmarket.com',
+      'david@bookmarket.com',
+      'sarah@bookmarket.com',
+    ];
+
+    // Delete only previous demo books and demo accounts, preserving any real registered users
+    const existingDemoUsers = await User.find({ email: { $in: demoEmails } });
+    const demoUserIds = existingDemoUsers.map((u) => u._id);
+    await Book.deleteMany({ seller: { $in: demoUserIds } });
+    await User.deleteMany({ email: { $in: demoEmails } });
+    console.log('Refreshed demo fixture accounts while keeping all real registered user accounts safe.');
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash('password123', salt);
