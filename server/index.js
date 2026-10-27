@@ -17,10 +17,25 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
-const clientOrigin = process.env.CLIENT_URL || '*';
+const clientOrigin = process.env.CLIENT_URL;
 app.use(
   cors({
-    origin: clientOrigin === '*' ? true : clientOrigin,
+    origin: (origin, callback) => {
+      if (!origin || !clientOrigin || clientOrigin === '*') {
+        return callback(null, true);
+      }
+      const allowed = clientOrigin
+        .split(',')
+        .map((u) => u.trim().replace(/\/$/, ''))
+        .filter(Boolean);
+      if (
+        allowed.includes(origin) ||
+        allowed.some((a) => a.includes('vercel.app') && origin.endsWith('.vercel.app'))
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
