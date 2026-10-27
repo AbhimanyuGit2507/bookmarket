@@ -6,9 +6,9 @@
 
 ## 🚀 Live Deployments & Health Check
 
-| Service | Platform | URL Placeholder |
+| Service | Platform | Live URL |
 | :--- | :--- | :--- |
-| **Frontend Web App** | Vercel | `https://the-bookmarket-client.vercel.app` |
+| **Frontend Web App** | Vercel | `https://bookmarket-client.vercel.app` |
 | **Backend API** | Render | `https://the-bookmarket-api.onrender.com` |
 | **API Healthcheck** | Render | `https://the-bookmarket-api.onrender.com/health` |
 
