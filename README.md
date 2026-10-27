@@ -145,19 +145,32 @@ Populate the database with demo users and realistic book listings across diverse
 npm run seed
 ```
 
-### 5. Running the Application Locally
-In two separate terminals, run backend and frontend:
+### 5. Running the Application Locally (1-Command Scripts)
+You can launch, stop, and inspect the entire platform with our production-grade scripts:
 
-**Terminal 1 (Backend API):**
 ```bash
-npm run server
-# Server runs on http://localhost:5000
+# 🚀 Start MongoDB, Backend (5000), and Frontend (5173) in one shot:
+./start-local.sh
+# or via npm:
+npm run start:local
+
+# 📋 Check real-time service health & ports:
+./status-local.sh
+# or via npm:
+npm run status:local
+
+# 🛑 Cleanly stop both backend and frontend:
+./stop-local.sh
+# or via npm:
+npm run stop:local
 ```
 
-**Terminal 2 (Frontend Client):**
+*(Alternatively, run backend and frontend separately in two terminals using `npm run server` and `npm run client`.)*
+
+### 6. Automated Integration Tests
+Execute the 29-test integration test suite against the backend API:
 ```bash
-npm run client
-# Client runs on http://localhost:5173
+npm test
 ```
 
 ---

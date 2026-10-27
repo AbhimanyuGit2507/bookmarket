@@ -9,6 +9,9 @@
     "client": "npm run dev --prefix client",
     "seed": "npm run seed --prefix server",
     "test": "npm test --prefix server",
+    "start:local": "./start-local.sh",
+    "stop:local": "./stop-local.sh",
+    "status:local": "./status-local.sh",
     "build:client": "npm run build --prefix client",
     "build:server": "echo 'Server has no build step'",
     "start": "npm start --prefix server"
