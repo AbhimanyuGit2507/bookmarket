@@ -118,7 +118,20 @@ export default function BuyInquiryModal({ isOpen, onClose, book, onInquirySent }
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-stone-500">Seller Email:</span>
-                <span className="font-semibold text-stone-900">{book.seller?.email}</span>
+                {book.seller?.email ? (
+                  <a
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(book.seller.email)}&su=${encodeURIComponent(`Inquiry regarding "${book.title}" on The BookMarket`)}&body=${encodeURIComponent(`Hi ${sellerName},\n\nI just submitted a purchase inquiry for "${book.title}" ($${book.price}) on The BookMarket.\n\nThanks!`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-amber-800 hover:text-amber-900 underline decoration-dotted inline-flex items-center gap-1"
+                    title="Open Gmail compose in new tab"
+                  >
+                    <span>{book.seller.email}</span>
+                    <Mail className="w-3 h-3" />
+                  </a>
+                ) : (
+                  <span className="font-semibold text-stone-900">N/A</span>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-stone-500">Agreed Price:</span>

@@ -382,7 +382,19 @@ export default function DashboardPage() {
                           <span className="font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                             📞 {inq.buyerPhone}
                           </span>
-                          <span className="text-stone-500">✉️ {inq.buyerEmail}</span>
+                          {inq.buyerEmail ? (
+                            <a
+                              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(inq.buyerEmail)}&su=${encodeURIComponent(`Regarding your request for "${inq.bookTitle}" on The BookMarket`)}&body=${encodeURIComponent(`Hi ${inq.buyerName},\n\nRegarding your purchase request for "${inq.bookTitle}" ($${inq.bookPrice}) on The BookMarket...\n\nThanks,\n${user.name}`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-stone-600 hover:text-amber-800 transition"
+                              title="Email Buyer via Gmail (new tab)"
+                            >
+                              ✉️ {inq.buyerEmail}
+                            </a>
+                          ) : (
+                            <span className="text-stone-500">✉️ No email</span>
+                          )}
                         </div>
 
                         {/* Note & Meetup */}
@@ -633,9 +645,13 @@ export default function DashboardPage() {
                   const waUrl = `https://wa.me/${sellerPhoneClean}?text=${encodeURIComponent(
                     `Hi ${b.seller?.name}, this is ${user.name} following up on my request for "${b.title}" ($${b.price})!`
                   )}`;
-                  const mailtoUrl = `mailto:${b.seller?.email || ''}?subject=${encodeURIComponent(
-                    `Following up on "${b.title}"`
-                  )}`;
+                  const emailSubject = encodeURIComponent(`Following up on "${b.title}" on The BookMarket`);
+                  const emailBody = encodeURIComponent(
+                    `Hi ${b.seller?.name || 'Seller'},\n\nThis is ${user.name} following up on my request for "${b.title}" ($${b.price}) on The BookMarket.\n\nThanks!`
+                  );
+                  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+                    b.seller?.email || ''
+                  )}&su=${emailSubject}&body=${emailBody}`;
 
                   return (
                     <div key={idx} className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-[#faf8f5]/50 transition">
@@ -691,9 +707,11 @@ export default function DashboardPage() {
                             <span>WhatsApp Seller</span>
                           </a>
                           <a
-                            href={mailtoUrl}
-                            className="p-2 rounded-xl text-stone-600 hover:text-stone-900 bg-white border border-[#e7e2d7] transition"
-                            title="Send email"
+                            href={gmailUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-xl text-stone-600 hover:text-stone-900 bg-white border border-[#e7e2d7] hover:bg-[#faf8f5] transition shadow-2xs"
+                            title="Email Seller via Gmail (new tab)"
                           >
                             <Mail className="w-4 h-4" />
                           </a>

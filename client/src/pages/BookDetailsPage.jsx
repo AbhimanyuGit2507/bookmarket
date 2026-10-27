@@ -152,11 +152,13 @@ export default function BookDetailsPage() {
 
   const whatsappUrl = `https://wa.me/${sellerPhone}?text=${whatsappMessage}`;
 
-  const mailtoUrl = `mailto:${book.seller?.email || ''}?subject=${encodeURIComponent(
-    `Inquiry regarding "${book.title}" on The BookMarket`
-  )}&body=${encodeURIComponent(
+  const emailSubject = encodeURIComponent(`Inquiry regarding "${book.title}" on The BookMarket`);
+  const emailBody = encodeURIComponent(
     `Hi ${sellerName},\n\nI saw your listing for "${book.title}" ($${book.price}) on The BookMarket and would love to arrange payment and collection.\n\nThanks!`
-  )}`;
+  );
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+    book.seller?.email || ''
+  )}&su=${emailSubject}&body=${emailBody}`;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -399,11 +401,14 @@ export default function BookDetailsPage() {
                   </a>
 
                   <a
-                    href={mailtoUrl}
-                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-bold bg-[#faf8f5] hover:bg-[#f3efe6] text-stone-800 border border-[#e7e2d7] transition"
+                    href={gmailUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-bold bg-[#faf8f5] hover:bg-[#f3efe6] text-stone-800 border border-[#e7e2d7] transition shadow-2xs hover:shadow-sm"
+                    title="Open Email Inquiry in Gmail (new tab)"
                   >
                     <Mail className="w-4 h-4 text-stone-500" />
-                    <span>Email Inquiries</span>
+                    <span>Email Inquiry</span>
                   </a>
                 </div>
 
