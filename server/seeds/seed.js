@@ -48,7 +48,7 @@ const seedData = async () => {
         originalPrice: 49,
         description:
           'The definitive guide to distributed systems architecture, storage engines, replication, partitioning, and stream processing. Pristine condition with no markings or dog-ears.',
-        coverImage: 'https://images.unsplash.com/photo-1532012164546-f432f2e3777a?auto=format&fit=crop&w=800&q=80',
+        coverImage: 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=800&q=80',
         status: 'available',
         city: 'San Francisco, CA',
         seller: sellerId,

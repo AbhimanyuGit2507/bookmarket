@@ -214,6 +214,10 @@ export default function BookDetailsPage() {
               src={book.coverImage || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80'}
               alt={book.title}
               className="w-full h-full object-cover object-center"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80';
+              }}
             />
             {discountPercent && discountPercent > 0 && (
               <div className="absolute top-4 right-4 z-10">

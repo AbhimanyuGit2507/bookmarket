@@ -20,7 +20,7 @@ const CONDITIONS = [
 
 const GENRE_PRESET_COVERS = {
   'Engineering & CS': [
-    { label: 'Coding / CS Book', url: 'https://images.unsplash.com/photo-1532012164546-f432f2e3777a?auto=format&fit=crop&w=800&q=80' },
+    { label: 'Coding / CS Book', url: 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=800&q=80' },
     { label: 'Technical Manual', url: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80' },
   ],
   'Fiction & Sci-Fi': [
