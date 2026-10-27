@@ -55,9 +55,13 @@ const apiLimiter = rateLimit({
 
 app.use('/api/', apiLimiter);
 
+const mongoose = require('mongoose');
+
 app.get('/health', (req, res) => {
+  const isConnected = mongoose.connection.readyState === 1;
   res.status(200).json({
     status: 'ok',
+    database: isConnected ? 'connected' : 'connecting',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
@@ -76,7 +80,7 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`The BookMarket API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
 });
 
