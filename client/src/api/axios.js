@@ -24,12 +24,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Optional auto-logout on token expiration if not on login page
-      const currentPath = window.location.pathname;
-      if (currentPath !== '/login' && currentPath !== '/register') {
-        localStorage.removeItem('bookmarket_token');
-        localStorage.removeItem('bookmarket_user');
-      }
+      localStorage.removeItem('bookmarket_token');
+      localStorage.removeItem('bookmarket_user');
+      window.dispatchEvent(
+        new CustomEvent('auth:expired', {
+          detail: error.response?.data?.message || 'Session expired',
+        })
+      );
     }
     return Promise.reject(error);
   }

@@ -16,6 +16,16 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const handleAuthExpired = () => {
+      setUser(null);
+      setToken(null);
+    };
+
+    window.addEventListener('auth:expired', handleAuthExpired);
+    return () => window.removeEventListener('auth:expired', handleAuthExpired);
+  }, []);
+
+  useEffect(() => {
     const verifyUser = async () => {
       const storedToken = localStorage.getItem('bookmarket_token');
       if (storedToken) {

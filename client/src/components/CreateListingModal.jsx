@@ -110,7 +110,13 @@ export default function CreateListingModal({ isOpen, onClose, onCreated }) {
         onClose();
       }
     } catch (err) {
-      setError(err?.response?.data?.message || err.message || 'Failed to create listing');
+      if (err?.response?.status === 401) {
+        setError(
+          'Your session has expired or the database was re-seeded. Please sign in or register again to publish listings.'
+        );
+      } else {
+        setError(err?.response?.data?.message || err.message || 'Failed to create listing');
+      }
     } finally {
       setLoading(false);
     }
@@ -144,9 +150,19 @@ export default function CreateListingModal({ isOpen, onClose, onCreated }) {
         </div>
 
         {error && (
-          <div className="mt-4 p-3.5 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-2.5 text-rose-800 text-xs font-semibold">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
-            <span>{error}</span>
+          <div className="mt-4 p-3.5 bg-rose-50 border border-rose-200 rounded-2xl flex flex-col gap-2 text-rose-800 text-xs font-semibold">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+              <span>{error}</span>
+            </div>
+            {error.includes('session has expired') && (
+              <a
+                href="/login"
+                className="mt-1 self-start inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-xs"
+              >
+                Sign In Again
+              </a>
+            )}
           </div>
         )}
 
