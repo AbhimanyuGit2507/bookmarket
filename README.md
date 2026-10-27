@@ -68,20 +68,6 @@ graph TD
 
 ---
 
-## 🔑 Evaluator & Demo Accounts
-
-For immediate evaluation, the application includes pre-configured evaluator accounts with distinct inventories, incoming purchase inquiries, and sales statistics. On the [Login Page](https://bookmarket-client.vercel.app/login), use the **1-Click Fill** buttons or enter the credentials below:
-
-| Account Name | Email | Password | Primary Role & Location | Pre-loaded Inventory |
-| :--- | :--- | :--- | :--- | :--- |
-| **Abhimanyu Negi** | `abhimanyu.25bcs10330@sst.scaler.com` | `password123` | **Primary Author** · Bengaluru, India | *MERN Fundamentals* by Mrinal sir |
-| **Alex Turner** | `seller@bookmarket.com` | `password123` | **Demo Seller** · San Francisco, CA | 8 books (Algorithms, Dune, Atomic Habits, etc.) |
-| **Maya Lin** | `buyer@bookmarket.com` | `password123` | **Demo Buyer & Seller** · Seattle, WA | 6 books (Pragmatic Programmer, Berserk, etc.) |
-| **David Chen** | `david@bookmarket.com` | `password123` | **Peer Seller** · Austin, TX | 5 books (Clean Code, Sapiens, SAT Guide, etc.) |
-| **Sarah Jenkins** | `sarah@bookmarket.com` | `password123` | **Peer Seller** · Boston, MA | 5 books (SICP, 1984, Deep Work, FE Exam, etc.) |
-
----
-
 ## ✨ Key Features & Architectural Highlights
 
 ### 1. Peer-to-Peer Communication (No Third-Party Gateway Fees)
